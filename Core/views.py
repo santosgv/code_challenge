@@ -1,4 +1,4 @@
-from rest_framework import viewsets,status
+from rest_framework import viewsets
 from rest_framework.response import Response
 from Core.models import Empresa, Colaborador, Organograma
 from Core.serializers import EmpresaSerializer, ColaboradorSerializer, OrganogramaSerializer
@@ -27,13 +27,18 @@ class OrganogramaViewSet(viewsets.ModelViewSet):
             return Response({"error": "Dados inválidos"}, status=400)
 
     def validar_dados(self, data):
-        # Implemente as validações necessárias com base nos dados recebidos
-        # Retorne True se os dados forem válidos e False caso contrário
-
-        gestor = data.get("gestor")
-        liderados = data.get("liderados")
-
-        # valida se o gestor e o mesmo que o liderado
-        if gestor is None or liderados is None or gestor == liderados:
+        gestor_id = data.get("gestor")
+        liderados_ids = data.get("liderados", [])
+        
+        if gestor_id and liderados_ids:
+            gestor = Colaborador.objects.filter(id=gestor_id).first()
+            liderados = Colaborador.objects.filter(id__in=liderados_ids)
+            print(data.get('gestor'))
+            print(data.get('liderados'))
+            if gestor and all(liderado.empresa == gestor.empresa for liderado in liderados):
+                return True
+            
+        if gestor_id is None or liderados_ids is None or gestor_id == liderados:
             return False
-        return True
+        
+        return False

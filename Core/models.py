@@ -10,7 +10,7 @@ class Colaborador(models.Model):
     nome = models.CharField(max_length=100)
     email = models.EmailField()
     empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE)
-    gestor = models.OneToOneField('self', on_delete=models.SET_NULL, null=True, blank=True)
+
 
 
     def __str__(self):
