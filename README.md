@@ -56,6 +56,7 @@ A API fornece os seguintes endpoints para interação:
 - `GET /api/empresas/{id}/`: Retorna os detalhes de uma empresa específica.
 - `PUT /api/empresas/{id}/`: Atualiza os detalhes de uma empresa específica.
 - `DELETE /api/empresas/{id}/`: Remove uma empresa específica.
+- `GET /api/{id.empresas}/colaboradores/`: Retorna a lista de colaboradores de uma empresa específica.
 
 ### Colaboradores
 
@@ -64,7 +65,7 @@ A API fornece os seguintes endpoints para interação:
 - `GET /api/colaboradores/{id}/`: Retorna os detalhes de um colaborador específico.
 - `PUT /api/colaboradores/{id}/`: Atualiza os detalhes de um colaborador específico.
 - `DELETE /api/colaboradores/{id}/`: Remove um colaborador específico.
-- `GET /api/{id.empresas}/colaboradores/`: Retorna a lista de colaboradores de uma empresa específica.
+
 
 ### Organogramas
 
