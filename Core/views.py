@@ -54,21 +54,30 @@ class OrganogramaViewSet(viewsets.ModelViewSet):
         return False
 
     @action(detail=True, methods=['get'])
-    def pares(self, request, pk=None):
+    def colaboradores(self, request, pk=None):
         try:
             organograma = self.get_object()
-            liderados = organograma.colaborador.all()
-            serializer = ColaboradorSerializer(liderados, many=True)
+            colaborador = organograma.colaborador.all()
+            serializer = ColaboradorSerializer(colaborador, many=True)
             return Response(serializer.data)
         except Organograma.DoesNotExist:
             return Response({"error": "Organograma não encontrado"}, status=404)
 
     @action(detail=True, methods=['get'])
-    def liderados_diretos(self, request, pk=None):
+    def gestores_diretos(self, request, pk=None):
         try:
-            pass
-            # parei aqui
-        except Colaborador.DoesNotExist:
-            return Response({"error": "Colaborador não encontrado"}, status=404)
+            organograma = self.get_object()
+            gestor = organograma.gestor
+            colaboradores = organograma.colaborador.all()
+
+            gestor_serializer = ColaboradorSerializer(gestor)
+   
+
+            data = {
+                'gestor': gestor_serializer.data,
+            }
+            return Response(gestor_serializer.data)
+        except Organograma.DoesNotExist:
+            return Response({"error": "Organograma não encontrado"}, status=404)
 
     
