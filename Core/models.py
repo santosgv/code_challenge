@@ -18,8 +18,8 @@ class Colaborador(models.Model):
 
 
 class Organograma(models.Model):
-    gestor = models.OneToOneField(Colaborador, on_delete=models.CASCADE, related_name='lider')
-    liderados = models.ManyToManyField(Colaborador, related_name='liderados')
+    gestor = models.OneToOneField(Colaborador, on_delete=models.CASCADE)
+    colaborador = models.ManyToManyField(Colaborador, related_name='colaborador')
 
     def __str__(self):
         return f'Gestor: {self.gestor.name}'
