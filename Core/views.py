@@ -1,4 +1,4 @@
-from rest_framework import viewsets
+from rest_framework import viewsets,status
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from Core.models import Empresa, Colaborador, Organograma
@@ -22,10 +22,11 @@ class OrganogramaViewSet(viewsets.ModelViewSet):
     serializer_class = OrganogramaSerializer
 
     def create(self, request, *args, **kwargs):
-        if self.validar_dados(request.data):
-            return super().create(request, *args, **kwargs)
+        response = self.validar_dados(request.data)
+        if isinstance(response, Response):  
+            return response
         else:
-            return Response({"error": "Dados inválidos"}, status=400)
+            return super().create(request, *args, **kwargs)
 
     def validar_dados(self, data):
         gestor_id = data.get("gestor")
@@ -38,17 +39,16 @@ class OrganogramaViewSet(viewsets.ModelViewSet):
            if gestor_id != colaboradores_ids:
             if gestor and all(liderado.empresa == gestor.empresa for liderado in colaborador):
                 if not gestor.colaborador.exists():
-                    return True
+                    return None
                 else:
-                    print("O gestor já possui liderados")
+                    return Response({"error": "O gestor já possui liderados"}, status=status.HTTP_400_BAD_REQUEST)
             else:
-                print('Nao pertence a mesma Empresa')
+                return Response({"error": "Não pertence à mesma Empresa"}, status=status.HTTP_400_BAD_REQUEST)
 
 
         
         if gestor_id == colaboradores_ids:
-            print('O gestor e o mesmo que o liderado')
-            return False
+            return Response({"error": "O gestor é o mesmo que o liderado"}, status=status.HTTP_400_BAD_REQUEST)
     
         
         return False
@@ -68,14 +68,8 @@ class OrganogramaViewSet(viewsets.ModelViewSet):
         try:
             organograma = self.get_object()
             gestor = organograma.gestor
-            colaboradores = organograma.colaborador.all()
-
             gestor_serializer = ColaboradorSerializer(gestor)
    
-
-            data = {
-                'gestor': gestor_serializer.data,
-            }
             return Response(gestor_serializer.data)
         except Organograma.DoesNotExist:
             return Response({"error": "Organograma não encontrado"}, status=404)
