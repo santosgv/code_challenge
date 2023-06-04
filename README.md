@@ -2,6 +2,8 @@
 code challenge about company org chart API
 
 
+![image](https://github.com/santosgv/code_challenge/assets/54445515/32bd1928-2998-48c8-97f9-b5a41307b94d)
+
 # API de Organograma
 
 Este é um projeto de API que gerencia informações de empresas, colaboradores e organogramas. A API permite criar, listar e manipular organogramas, com validações adicionais para garantir a integridade dos dados.
