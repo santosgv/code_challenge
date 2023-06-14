@@ -23,7 +23,7 @@ class OrganogramaViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         response = self.validar_dados(request.data)
-        if isinstance(response, Response):  
+        if isinstance(response, Response):
             return response
         else:
             return super().create(request, *args, **kwargs)
@@ -32,26 +32,21 @@ class OrganogramaViewSet(viewsets.ModelViewSet):
         gestor_id = data.get("gestor")
         colaboradores_ids = data.get("colaborador")
 
-        if gestor_id and colaboradores_ids:
-           gestor = Colaborador.objects.filter(id=gestor_id).first()
-           colaborador = Colaborador.objects.filter(id__in=colaboradores_ids)
+        def validar_gestor_e_colaboradores(gestor_id, colaboradores_ids):
+            if gestor_id and colaboradores_ids:
+                gestor = Colaborador.objects.filter(id=gestor_id).first()
+                colaboradores = Colaborador.objects.filter(id__in=colaboradores_ids)
 
-           if gestor_id != colaboradores_ids:
-            if gestor and all(liderado.empresa == gestor.empresa for liderado in colaborador):
-                if not gestor.colaborador.exists():
-                    return None
-                else:
-                    return Response({"error": "O gestor já possui liderados"}, status=status.HTTP_400_BAD_REQUEST)
-            else:
-                return Response({"error": "Não pertence à mesma Empresa"}, status=status.HTTP_400_BAD_REQUEST)
+                if gestor_id not in colaboradores_ids:
+                    if gestor and all(liderado.empresa == gestor.empresa for liderado in colaboradores):
+                        if not gestor.colaborador.exists():
+                            return None
+                        else:
+                            return Response({"error": "O gestor já possui liderados"}, status=status.HTTP_400_BAD_REQUEST)
+                    else:
+                        return Response({"error": "Não pertence à mesma Empresa"}, status=status.HTTP_400_BAD_REQUEST)
 
-
-        
-        if gestor_id == colaboradores_ids:
-            return Response({"error": "O gestor é o mesmo que o liderado"}, status=status.HTTP_400_BAD_REQUEST)
-    
-        
-        return False
+        return validar_gestor_e_colaboradores(gestor_id, colaboradores_ids)
 
     @action(detail=True, methods=['get'])
     def colaboradores(self, request, pk=None):
